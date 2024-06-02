@@ -28,7 +28,6 @@ import com.ibatis.sqlmap.engine.transaction.TransactionManager;
 import com.ibatis.sqlmap.engine.transaction.external.ExternalTransactionConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -347,7 +346,7 @@ public class SqlMapClientFactoryBean implements FactoryBean<SqlMapClient>, Initi
 				client = configParser.parse(is, properties);
 			}
 			catch (RuntimeException ex) {
-				throw new NestedIOException("Failed to parse config resource: " + configLocation, ex.getCause());
+				throw new IOException("Failed to parse config resource: " + configLocation, ex.getCause());
 			}
 		}
 
@@ -358,7 +357,7 @@ public class SqlMapClientFactoryBean implements FactoryBean<SqlMapClient>, Initi
 					mapParser.parse(mappingLocation.getInputStream());
 				}
 				catch (NodeletException ex) {
-					throw new NestedIOException("Failed to parse mapping resource: " + mappingLocation, ex);
+					throw new IOException("Failed to parse mapping resource: " + mappingLocation, ex);
 				}
 			}
 		}
