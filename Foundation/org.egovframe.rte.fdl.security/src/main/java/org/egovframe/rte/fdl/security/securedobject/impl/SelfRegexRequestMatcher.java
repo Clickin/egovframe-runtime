@@ -18,7 +18,7 @@ package org.egovframe.rte.fdl.security.securedobject.impl;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class SelfRegexRequestMatcher implements RequestMatcher {
 
@@ -69,5 +69,4 @@ public class SelfRegexRequestMatcher implements RequestMatcher {
         
         return code;
     }
-
 }

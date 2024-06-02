@@ -19,7 +19,7 @@
 
     <properties>
         <org.egovframe.rte.version>4.2.0</org.egovframe.rte.version>
-        <spring.maven.artifact.version>5.3.27</spring.maven.artifact.version>
+        <spring.maven.artifact.version>6.0.21</spring.maven.artifact.version>
         <batch.maven.artifact.version>4.3.8</batch.maven.artifact.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -296,9 +296,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -38,7 +38,7 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

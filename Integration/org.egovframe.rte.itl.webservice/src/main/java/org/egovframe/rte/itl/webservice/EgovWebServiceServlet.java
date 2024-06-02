@@ -22,7 +22,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletConfig;
+import jakarta.servlet.ServletConfig;
 
 /**
  * 전자정부 웹 서비스를 Servlet을 통해 제공하기 위해 사용하는 Servlet 구현 클래스

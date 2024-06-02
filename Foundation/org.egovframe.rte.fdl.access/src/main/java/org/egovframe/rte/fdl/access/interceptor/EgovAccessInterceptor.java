@@ -15,6 +15,8 @@
  */
 package org.egovframe.rte.fdl.access.interceptor;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.egovframe.rte.fdl.access.bean.AuthorityResourceMetadata;
 import org.egovframe.rte.fdl.access.config.EgovAccessConfigShare;
 import org.egovframe.rte.fdl.access.service.EgovUserDetailsHelper;
@@ -25,8 +27,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,6 @@ public class EgovAccessInterceptor implements HandlerInterceptor, ApplicationCon
         this.context = context;
     }
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         LOGGER.debug("##### EgovAccessInterceptor Start #####");

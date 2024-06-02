@@ -20,7 +20,7 @@ import org.egovframe.rte.fdl.security.config.SecurityConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
@@ -76,7 +76,7 @@ public class MapClassFactoryBean implements FactoryBean<String>, ApplicationCont
 		return defaultMapClass;
 	}
 
-	@Required
+	@Autowired
 	public void setDefaultMapClass(String defaultMapClass) {
 		this.defaultMapClass = defaultMapClass;
 	}
