@@ -1,0 +1,80 @@
+name: Publish to GitHub Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 4.3.0, 4.3.1-SNAPSHOT, 5.0.0)'
+        required: true
+        default: '4.3.0'
+      skip_tests:
+        description: 'Skip tests during build'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: temurin
+          cache: maven
+          server-id: github
+
+      - name: Update version in POMs
+        run: |
+          echo "🔄 Updating project version to ${{ github.event.inputs.version }}"
+          mvn versions:set -DnewVersion="${{ github.event.inputs.version }}" -B
+          mvn versions:commit -B
+
+      - name: Build project
+        run: |
+          echo "🔨 Building project with Maven"
+          mvn clean compile -B "-Dfile.encoding=UTF-8" "-Duser.timezone=Asia/Seoul"
+
+      - name: Run tests
+        if: github.event.inputs.skip_tests == 'false'
+        run: |
+          echo "🧪 Running tests"
+          mvn test -B "-Dfile.encoding=UTF-8" "-Duser.timezone=Asia/Seoul"
+
+      - name: Package project
+        run: |
+          echo "📦 Packaging project"
+          mvn package "-DskipTests=${{ github.event.inputs.skip_tests }}" -B "-Dfile.encoding=UTF-8" "-Duser.timezone=Asia/Seoul"
+
+      - name: Publish to GitHub Packages
+        run: |
+          echo "🚀 Publishing to GitHub Packages"
+          mvn deploy "-DskipTests=true" -B "-Dfile.encoding=UTF-8" "-Duser.timezone=Asia/Seoul"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Summary
+        run: |
+          echo "## 📋 Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Java Version**: ${{ steps.java-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests Skipped**: ${{ github.event.inputs.skip_tests }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: https://github.com/${{ github.repository }}/packages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully published to GitHub Packages!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Published Artifacts:" >> $GITHUB_STEP_SUMMARY
+          echo "- org.egovframe.rte:org.egovframe.rte.bat.core:${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- org.egovframe.rte:org.egovframe.rte.fdl.*:${{ github.event.inputs.version }} (12 modules)" >> $GITHUB_STEP_SUMMARY
+          echo "- org.egovframe.rte:org.egovframe.rte.itl.*:${{ github.event.inputs.version }} (2 modules)" >> $GITHUB_STEP_SUMMARY
+          echo "- org.egovframe.rte:org.egovframe.rte.psl.*:${{ github.event.inputs.version }} (6 modules)" >> $GITHUB_STEP_SUMMARY
+          echo "- org.egovframe.rte:org.egovframe.rte.ptl.*:${{ github.event.inputs.version }} (3 modules)" >> $GITHUB_STEP_SUMMARY
