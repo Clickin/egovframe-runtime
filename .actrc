@@ -1,0 +1,5 @@
+--container-architecture linux/amd64
+--platform ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+-P ubuntu-latest=-self-hosted
+--pull=false
+--rm
