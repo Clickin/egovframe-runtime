@@ -48,7 +48,6 @@ public class EgovReflectionSupport<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EgovReflectionSupport.class);
 
-    private Object object = null;
     private volatile Method[] methods;
     private volatile HashMap<String, Method> methodMap;
     private Type[] fieldType;
@@ -96,12 +95,14 @@ public class EgovReflectionSupport<T> {
      *
      * @param type VO 타입
      */
-    private void createObject(Class<?> type) {
+    private Object createObject(Class<?> type) {
+        Object object = null;
         try {
             object = type.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             ReflectionUtils.handleReflectionException(e);
         }
+        return object;
     }
 
     /**
@@ -137,12 +138,12 @@ public class EgovReflectionSupport<T> {
      * @param tokens VO에 set 될 value
      * @param names  VO의 field 명
      */
-    private void invokeSetterMethod(List<String> tokens, String[] names) {
+    private void invokeSetterMethod(Object target, List<String> tokens, String[] names) {
         Method method;
         for (int i = 0; i < names.length; i++) {
             method = methodMap.get(names[i]);
             try {
-                method.invoke(object, parsingFromString(tokens.get(i).trim(), fieldType[i]));
+                method.invoke(target, parsingFromString(tokens.get(i).trim(), fieldType[i]));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 ReflectionUtils.handleReflectionException(e);
             }
@@ -151,9 +152,9 @@ public class EgovReflectionSupport<T> {
 
     @SuppressWarnings("unchecked")
     public T generateObject(Class<?> type, List<String> tokens, String[] names) {
-        createObject(type);
-        invokeSetterMethod(tokens, names);
-        return (T) object;
+        Object target = createObject(type);
+        invokeSetterMethod(target, tokens, names);
+        return (T) target;
     }
 
     /**
