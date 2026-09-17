@@ -109,11 +109,8 @@ public class EgovReflectionSupport<T> {
      * Bean 생성시 한 번만 실행 된다.
      */
     public void generateSetterMethodMap(Class<?> type, String[] names) {
-        try {
-            methods = type.newInstance().getClass().getMethods();
-        } catch (InstantiationException | IllegalAccessException e) {
-            ReflectionUtils.handleReflectionException(e);
-        }
+        // 상속된 public setter도 조회되도록 instance 생성 없이 class metadata 사용
+        methods = type.getMethods();
         methodMap = new HashMap<String, Method>();
         try {
             if (ArrayUtils.isNotEmpty(names) && names.length > 0) {
@@ -245,11 +242,13 @@ public class EgovReflectionSupport<T> {
     public void getFieldType(Class<?> type, String[] names) {
         fieldType = new Type[names.length];
         for (int i = 0; i < names.length; i++) {
-            try {
-                fieldType[i] = type.newInstance().getClass().getDeclaredField(names[i]).getType();
-            } catch (SecurityException | NoSuchFieldException | InstantiationException | IllegalAccessException e) {
-                ReflectionUtils.handleReflectionException(e);
+            // backing field 대신 setter parameter type을 conversion type으로 사용:
+            // 상속 property와 backing field가 없는 bean property 모두 지원
+            Method setter = methodMap.get(names[i]);
+            if (setter == null || setter.getParameterCount() != 1) {
+                throw new IllegalStateException("No suitable setter method for property '" + names[i] + "' on " + type.getName());
             }
+            fieldType[i] = setter.getParameterTypes()[0];
         }
     }
 
@@ -259,11 +258,15 @@ public class EgovReflectionSupport<T> {
     public String[] getSqlTypeArray(String[] params, Object item) {
         String[] sqlTypes = new String[params.length];
         for (int i = 0; i < params.length; i++) {
-            try {
-                sqlTypes[i] = item.getClass().getDeclaredField(params[i]).getType().getSimpleName().toString();
-            } catch (SecurityException | NoSuchFieldException e) {
-                ReflectionUtils.handleReflectionException(e);
+            String suffix = params[i].substring(0, 1).toUpperCase(Locale.ROOT) + params[i].substring(1);
+            Method getter = retrieveGetterMethod(item.getClass().getMethods(), "get" + suffix);
+            if (getter == null) {
+                getter = retrieveGetterMethod(item.getClass().getMethods(), "is" + suffix);
             }
+            if (getter == null) {
+                throw new IllegalStateException("No suitable getter method for property '" + params[i] + "' on " + item.getClass().getName());
+            }
+            sqlTypes[i] = getter.getReturnType().getSimpleName();
         }
         return sqlTypes;
     }

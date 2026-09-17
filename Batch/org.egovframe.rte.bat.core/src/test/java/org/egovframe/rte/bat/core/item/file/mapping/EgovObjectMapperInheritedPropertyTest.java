@@ -16,6 +16,7 @@
 package org.egovframe.rte.bat.core.item.file.mapping;
 
 import org.junit.jupiter.api.Test;
+import org.egovframe.rte.bat.core.reflection.EgovReflectionSupport;
 
 import java.util.Arrays;
 
@@ -64,6 +65,19 @@ class EgovObjectMapperInheritedPropertyTest {
 		ComputedVO vo = mapper.mapObject(Arrays.asList("shown"));
 
 		assertEquals("shown", vo.getDisplayName());
+	}
+
+	/**
+	 * JDBC writer의 sqlType 조회도 superclass property에 대해 동작해야 한다.
+	 */
+	@Test
+	void getSqlTypeArray_inheritedProperty() {
+		EgovReflectionSupport<ChildVO> reflector = new EgovReflectionSupport<>();
+
+		String[] sqlTypes = reflector.getSqlTypeArray(new String[]{"inheritedValue", "localValue"}, new ChildVO());
+
+		assertEquals("String", sqlTypes[0]);
+		assertEquals("Integer", sqlTypes[1]);
 	}
 
 	public static class BaseVO {
